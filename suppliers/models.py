@@ -17,7 +17,7 @@ class Product(models.Model):
         verbose_name_plural = 'продукты'
 
 
-class Supplier(models.Model):
+class Participant(models.Model):
 
     SUPPLIER_TYPES = (
         ('factory', 'завод'),
@@ -27,10 +27,10 @@ class Supplier(models.Model):
 
     title = models.CharField(max_length=50, verbose_name='название')
     supplier_type = models.CharField(max_length=50, choices=SUPPLIER_TYPES, verbose_name='тип участника')
-    products = models.ManyToManyField(Product)
-    supplier = models.ForeignKey('self', **NULLABLE, verbose_name='поставщик')
-    debt = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='задолженость')
-    level = models.IntegerField(verbose_name='уровень в цепочке')
+    products = models.ManyToManyField(Product, **NULLABLE)
+    supplier = models.ForeignKey('self', on_delete=models.CASCADE, **NULLABLE, verbose_name='поставщик')
+    debt = models.DecimalField(max_digits=10, decimal_places=2, default=0,  verbose_name='задолженость')
+    level = models.IntegerField(default=None, **NULLABLE, verbose_name='уровень в цепочке')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='дата создания')
 
     def __str__(self):
@@ -56,7 +56,7 @@ class Contacts(models.Model):
     city = models.CharField(max_length=50, verbose_name='город')
     street = models.CharField(max_length=50, verbose_name='улица')
     house_number = models.CharField(max_length=25, verbose_name='номер дома')
-    supplier = models.OneToOneField(Supplier, on_delete=models.CASCADE)
+    supplier = models.OneToOneField(Participant, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.email}, {self.country}({self.city},{self.street} {self.house_number}'
